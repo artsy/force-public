@@ -11,12 +11,6 @@ script( src=asset("/assets/legacy-common-react.js") )
 script( src=asset("/assets/legacy-common-utility.js") )
 script( src=asset("/assets/legacy-artsy.js") )
 
-//- OneTrust Cookie Consent, must be the first js loaded.
-if options.onetrust && !sd.THIRD_PARTIES_DISABLED
-  script( src='https://cdn.cookielaw.org/scripttemplates/otSDKStub.js', type='text/javascript', charset='UTF-8', data-domain-script='12abb958-ed18-407e-8829-ea60cdd69a86-test' )
-  script( type='text/javascript' ).
-    function OptanonWrapper() {}
-
 if sd.CURRENT_PATH && sd.CURRENT_PATH.includes("/auction/") || sd.CURRENT_PATH && sd.CURRENT_PATH.includes("/auction-registration/")
   script( id='ze-snippet' src='https://static.zdassets.com/ekr/snippet.js?key=#{sd.ZENDESK_KEY}')
 

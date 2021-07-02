@@ -41,3 +41,8 @@ if sd.BROWSER && sd.BROWSER.family != 'Other'
 //- TTI measurement
 script( type="text/javascript" )
   include ../../../../lib/tti-init.js
+
+//- OneTrust Cookie Consent, must be the first js loaded.
+script( src='https://cdn.cookielaw.org/scripttemplates/otSDKStub.js', type='text/javascript', charset='UTF-8', data-domain-script='0f8c1eae-b5a7-472e-ae48-884e0baae72c-test' )
+script( type='text/javascript' ).
+  function OptanonWrapper() {}
