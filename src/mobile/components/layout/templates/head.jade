@@ -31,6 +31,14 @@ link( rel='preconnect', href='https://www.googleadservices.com' )
 link( rel='dns-prefetch', href='https://connect.facebook.net' )
 link( rel='dns-prefetch', href='https://cdn.segment.com' )
 
+#scripts
+//- OneTrust Cookie Consent, must be the first js loaded.
+if !sd.THIRD_PARTIES_DISABLED
+  script( src='https://cdn.cookielaw.org/scripttemplates/otSDKStub.js', type='text/javascript', charset='UTF-8', data-domain-script='6067abb6
+-4dcd-47ba-bad5-972b24fde62e-test' )
+  script( type='text/javascript' ).
+    function OptanonWrapper() {}
+
 //- TTI measurement
 script( type="text/javascript" )
   include ../../../../lib/tti-init.js

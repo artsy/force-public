@@ -33,6 +33,14 @@
   <%%- content.head %>
   <%%- content.style %>
   <%%- content.data %>
+
+  <%% if (!disable.onetrust && !sd.THIRD_PARTIES_DISABLED) { %>
+    <script src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js"  type="text/javascript" charset="UTF-8" data-domain-script="6067abb6-4dcd-47ba-bad5-972b24fde62e-test" >
+    </script>
+    <script type="text/javascript">
+      function OptanonWrapper() { }
+    </script>
+  <%% } %>
 </head>
 
 <body>
@@ -92,14 +100,6 @@
 
     window.letterpress('trackPageView');
   </script>
-  <%% } %>
-
-  <%% if (!disable.onetrust && !sd.THIRD_PARTIES_DISABLED) { %>
-    <script src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js"  type="text/javascript" charset="UTF-8" data-domain-script="6067abb6-4dcd-47ba-bad5-972b24fde62e-test" >
-    </script>
-    <script type="text/javascript">
-      function OptanonWrapper() { }
-    </script>
   <%% } %>
 
 </body>
