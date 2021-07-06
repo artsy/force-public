@@ -110,7 +110,7 @@ export class LoginForm extends Component<FormProps, LoginFormState> {
           }
 
           return (
-            <Form onSubmit={handleSubmit} data-test="LoginForm">
+            <Form onSubmit={handleSubmit} data-test="LoginForm" name="login">
               <QuickInput
                 block
                 // @ts-expect-error STRICT_NULL_CHECK
@@ -148,7 +148,9 @@ export class LoginForm extends Component<FormProps, LoginFormState> {
                 globalError !== "missing two-factor authentication code" && (
                   <Error show>{globalError}</Error>
                 )}
-              <SubmitButton loading={isSubmitting}>Log in</SubmitButton>
+              <SubmitButton loading={isSubmitting} name="submit">
+                Log in
+              </SubmitButton>
               <Footer
                 handleTypeChange={() =>
                   // @ts-expect-error STRICT_NULL_CHECK
