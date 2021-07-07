@@ -94,6 +94,14 @@
   </script>
   <%% } %>
 
+  <%% if (!disable.onetrust && !sd.THIRD_PARTIES_DISABLED) { %>
+    <script src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js"  type="text/javascript" charset="UTF-8" data-domain-script="12abb958-ed18-407e-8829-ea60cdd69a86" >
+    </script>
+    <script type="text/javascript">
+      function OptanonWrapper() { }
+    </script>
+  <%% } %>
+
 </body>
 
 </html>

@@ -96,6 +96,7 @@ app.get(flatRoutes, async (req: Request, res: Response, next: NextFunction) => {
       },
       disable: {
         analytics: getServerParam(req, "disableAnalytics") === "true",
+        onetrust: getServerParam(req, "disableOneTrust") === "true",
         postie: getServerParam(req, "disablePostie") === "true",
         sailthru: getServerParam(req, "disableSailthru") === "true",
         segment: getServerParam(req, "disableSegment") === "true",

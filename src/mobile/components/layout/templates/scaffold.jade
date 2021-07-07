@@ -13,6 +13,12 @@ html( class=htmlClass )
     block body
 
     #scripts
+      //- OneTrust Cookie Consent, must be the first js loaded.
+      if !sd.THIRD_PARTIES_DISABLED
+        script( src='https://cdn.cookielaw.org/scripttemplates/otSDKStub.js', type='text/javascript', charset='UTF-8', data-domain-script='12abb958-ed18-407e-8829-ea60cdd69a86' )
+        script( type='text/javascript' ).
+          function OptanonWrapper() {}
+
       //- Common bundle
       script( src=asset("/assets/legacy-runtime.js") )
       script( src=asset("/assets/legacy-common.js") )
