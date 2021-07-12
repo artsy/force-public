@@ -10,7 +10,10 @@ import {
   Spacer,
   Text,
 } from "@artsy/palette"
-import { SavedAddressType } from "../Utils/shippingUtils"
+import {
+  SavedAddressType,
+  convertShippingAddressToMutationInput,
+} from "../Utils/shippingUtils"
 import { Formik, FormikHelpers, FormikProps } from "formik"
 import {
   removeEmptyKeys,
@@ -22,11 +25,17 @@ import { createUserAddress } from "v2/Apps/Order/Mutations/CreateUserAddress"
 import { SavedAddresses_me } from "v2/__generated__/SavedAddresses_me.graphql"
 import { AddressModalFields } from "v2/Components/Address/AddressModalFields"
 import { useSystemContext } from "v2/System/SystemContext"
+import { UpdateUserAddressMutationResponse } from "v2/__generated__/UpdateUserAddressMutation.graphql"
+import { CreateUserAddressMutationResponse } from "v2/__generated__/CreateUserAddressMutation.graphql"
+
 export interface Props {
   show: boolean
   closeModal: () => void
   address?: SavedAddressType
-  onSuccess: (address) => void
+  onSuccess: (
+    address: UpdateUserAddressMutationResponse &
+      CreateUserAddressMutationResponse
+  ) => void
   onDeleteAddress: (address) => void
   onError: (message: string) => void
   modalDetails?: {
@@ -122,7 +131,7 @@ export const AddressModal: React.FC<Props> = ({
                   // @ts-expect-error STRICT_NULL_CHECK
                   relayEnvironment,
                   address?.internalID,
-                  values,
+                  convertShippingAddressToMutationInput(values),
                   closeModal,
                   handleSuccess,
                   handleError
