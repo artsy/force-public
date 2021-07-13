@@ -1,8 +1,8 @@
 import { MockBoot, renderRelayTree } from "v2/DevTools"
 import React from "react"
-import { GeneArtworkFilterRefetchContainer } from "../GeneArtworkFilter"
+import { TagArtworkFilterRefetchContainer } from "../Components/TagArtworkFilter"
 import { graphql } from "react-relay"
-import { GeneArtworkFilter_QueryRawResponse } from "v2/__generated__/GeneArtworkFilter_Query.graphql"
+import { TagArtworkFilter_QueryRawResponse } from "v2/__generated__/TagArtworkFilter_Query.graphql"
 import { useTracking } from "v2/System/Analytics/useTracking"
 
 jest.unmock("react-relay")
@@ -18,7 +18,7 @@ jest.mock("v2/Utils/Hooks/useMatchMedia", () => ({
   useMatchMedia: () => ({}),
 }))
 
-describe("GeneArtworkFilter", () => {
+describe("TagArtworkFilter", () => {
   const trackEvent = jest.fn()
 
   beforeEach(() => {
@@ -30,24 +30,24 @@ describe("GeneArtworkFilter", () => {
   })
 
   const getWrapper = async (
-    response: GeneArtworkFilter_QueryRawResponse = GENE_ARTWORK_FILTER
+    response: TagArtworkFilter_QueryRawResponse = TAG_ARTWORK_FILTER
   ) => {
     return renderRelayTree({
-      Component: ({ gene }) => {
+      Component: ({ tag }) => {
         return (
           <MockBoot user={{ id: "percy-z" }}>
-            <GeneArtworkFilterRefetchContainer gene={gene} />
+            <TagArtworkFilterRefetchContainer tag={tag} />
           </MockBoot>
         )
       },
       query: graphql`
-        query GeneArtworkFilter_Query($slug: String!) @raw_response_type {
-          gene(id: $slug) {
-            ...GeneArtworkFilter_gene @arguments(shouldFetchCounts: true)
+        query TagArtworkFilter_Query($slug: String!) @raw_response_type {
+          tag(id: $slug) {
+            ...TagArtworkFilter_tag @arguments(shouldFetchCounts: true)
           }
         }
       `,
-      variables: { slug: "representations-of-architecture" },
+      variables: { slug: "tag" },
       mockData: response,
     })
   }
@@ -56,85 +56,6 @@ describe("GeneArtworkFilter", () => {
     const wrapper = await getWrapper()
     expect(wrapper.find("ArtworkFilterArtworkGrid").length).toBe(1)
     expect(wrapper.find("GridItem__ArtworkGridItem").length).toBe(2)
-  })
-
-  it("includes the artist filter", async () => {
-    const wrapper = await getWrapper()
-    const ArtistFilterWrapper = wrapper.find("ArtistsFilter")
-
-    expect(ArtistFilterWrapper.length).toBe(1)
-
-    ArtistFilterWrapper.find("ChevronIcon").simulate("click")
-
-    expect(ArtistFilterWrapper.find("Checkbox").at(0).text()).toMatch(
-      "Artists I follow (15)"
-    )
-  })
-
-  it("includes the medium filter", async () => {
-    const wrapper = await getWrapper()
-
-    expect(wrapper.find("MediumFilter").length).toBe(1)
-  })
-
-  it("includes the price range filter", async () => {
-    const wrapper = await getWrapper()
-
-    expect(wrapper.find("PriceRangeFilter").length).toBe(1)
-  })
-
-  it("includes the rarity filter", async () => {
-    const wrapper = await getWrapper()
-
-    expect(wrapper.find("AttributionClassFilter").length).toBe(1)
-  })
-
-  it("includes the size filter", async () => {
-    const wrapper = await getWrapper()
-
-    expect(wrapper.find("SizeFilter").length).toBe(1)
-  })
-
-  it("includes the ways to buy filter", async () => {
-    const wrapper = await getWrapper()
-
-    expect(wrapper.find("WaysToBuyFilter").length).toBe(1)
-  })
-
-  it("includes the time period filter", async () => {
-    const wrapper = await getWrapper()
-
-    expect(wrapper.find("TimePeriodFilter").length).toBe(1)
-  })
-
-  it("includes the color filter", async () => {
-    const wrapper = await getWrapper()
-
-    expect(wrapper.find("ColorFilter").length).toBe(1)
-  })
-
-  it("includes the galleries and institutions filter", async () => {
-    const wrapper = await getWrapper()
-
-    expect(wrapper.find("PartnersFilter").length).toBe(1)
-  })
-
-  it("includes the artwork location filter", async () => {
-    const wrapper = await getWrapper()
-
-    expect(wrapper.find("ArtworkLocationFilter").length).toBe(1)
-  })
-
-  it("includes the artist nationality and ethnicity filter", async () => {
-    const wrapper = await getWrapper()
-
-    expect(wrapper.find("ArtistNationalityFilter").length).toBe(1)
-  })
-
-  it("includes the materials filter", async () => {
-    const wrapper = await getWrapper()
-
-    expect(wrapper.find("MaterialsFilter").length).toBe(1)
   })
 
   it("renders filters in correct order", async () => {
@@ -194,9 +115,9 @@ describe("GeneArtworkFilter", () => {
   })
 })
 
-const GENE_ARTWORK_FILTER: GeneArtworkFilter_QueryRawResponse = {
-  gene: {
-    id: "gene-id",
+const TAG_ARTWORK_FILTER: TagArtworkFilter_QueryRawResponse = {
+  tag: {
+    id: "tag-id",
     slug: "representations-of-architecture",
     internalID: "4d90d193dcdd5f44a5000082",
     filtered_artworks: {
