@@ -35,16 +35,18 @@ interface SavedAddressesProps {
   commitMutation?: CommitMutation
   relay: RelayRefetchProp
   addressCount?: number
-  onAddressDelete?: (isLast: boolean) => void
+  onAddressDelete?: (removedAddressId: string) => void
+  onSelectedAddressEdited?: () => void
+  selectedAddress?: string
 }
 // @ts-expect-error STRICT_NULL_CHECK
 type Address = SavedAddresses_me["addressConnection"]["edges"][0]["node"]
 
 const defaultAddressIndex = addressList => {
-  const indexOfDefaultAddress = addressList.findIndex(
-    address => address.node.isDefault
-  )
-  return `${indexOfDefaultAddress > -1 ? indexOfDefaultAddress : 0}`
+  const defaultAddressID = addressList.find(address => address.node.isDefault)
+    ?.node.internalID
+
+  return defaultAddressID || addressList[0]?.node.internalID
 }
 
 const SavedAddresses: React.FC<SavedAddressesProps> = props => {
@@ -57,11 +59,19 @@ const SavedAddresses: React.FC<SavedAddressesProps> = props => {
   const [showAddressModal, setShowAddressModal] = useState<boolean>(false)
   const [address, setAddress] = useState(null as Address)
   const logger = createLogger("SavedAddresses.tsx")
-  const { onSelect, me, inCollectorProfile, relay, onAddressDelete } = props
+  const {
+    onSelect,
+    me,
+    inCollectorProfile,
+    relay,
+    onAddressDelete,
+    selectedAddress,
+    onSelectedAddressEdited,
+  } = props
   const addressList = me?.addressConnection?.edges ?? []
   const { relayEnvironment } = useSystemContext()
 
-  const onSuccess = () => {
+  const refetchAddresses = (refetchSuccessCallback?: () => void) => {
     relay.refetch(
       {
         first: PAGE_SIZE,
@@ -70,6 +80,8 @@ const SavedAddresses: React.FC<SavedAddressesProps> = props => {
       error => {
         if (error) {
           logger.error(error)
+        } else {
+          refetchSuccessCallback && refetchSuccessCallback()
         }
       }
     )
@@ -80,9 +92,19 @@ const SavedAddresses: React.FC<SavedAddressesProps> = props => {
   }
 
   const handleDeleteAddress = (addressID: string) => {
-    // @ts-expect-error STRICT_NULL_CHECK
-    deleteUserAddress(relayEnvironment, addressID, onSuccess, onError)
-    onAddressDelete && onAddressDelete(addressList.length === 1)
+    deleteUserAddress(
+      // @ts-expect-error STRICT_NULL_CHECK
+      relayEnvironment,
+      addressID,
+      () => {
+        refetchAddresses(() => {
+          // Execute address delete callback after address deleted
+          // and list of addresses updated
+          onAddressDelete && onAddressDelete(addressID)
+        })
+      },
+      onError
+    )
   }
 
   const handleEditAddress = (address: Address, index: number) => {
@@ -95,8 +117,24 @@ const SavedAddresses: React.FC<SavedAddressesProps> = props => {
   }
 
   const handleSetDefaultAddress = (addressID: string) => {
-    // @ts-expect-error STRICT_NULL_CHECK
-    updateUserDefaultAddress(relayEnvironment, addressID, onSuccess, onError)
+    updateUserDefaultAddress(
+      // @ts-expect-error STRICT_NULL_CHECK
+      relayEnvironment,
+      addressID,
+      () => refetchAddresses(),
+      onError
+    )
+  }
+
+  const createOrUpdateAddressSuccess = address => {
+    refetchAddresses()
+
+    if (
+      selectedAddress ==
+      address?.updateUserAddress?.userAddressOrErrors?.internalID
+    ) {
+      onSelectedAddressEdited && onSelectedAddressEdited()
+    }
   }
 
   const collectorProfileAddressItems = addressList.map((address, index) => {
@@ -210,7 +248,7 @@ const SavedAddresses: React.FC<SavedAddressesProps> = props => {
         modalDetails={modalDetails}
         closeModal={() => setShowAddressModal(false)}
         address={address}
-        onSuccess={onSuccess}
+        onSuccess={createOrUpdateAddressSuccess}
         onDeleteAddress={handleDeleteAddress}
         onError={onError}
         me={me}
@@ -221,7 +259,7 @@ const SavedAddresses: React.FC<SavedAddressesProps> = props => {
   const addressItems = addressList.map((address, index) => {
     return (
       <BorderedRadio
-        value={`${index}`}
+        value={address?.node?.internalID}
         key={index}
         position="relative"
         data-test="savedAddress"
@@ -249,7 +287,7 @@ const SavedAddresses: React.FC<SavedAddressesProps> = props => {
     <>
       <RadioGroup
         onSelect={onSelect}
-        defaultValue={defaultAddressIndex(addressList)}
+        defaultValue={selectedAddress || defaultAddressIndex(addressList)}
       >
         {addressItems}
       </RadioGroup>

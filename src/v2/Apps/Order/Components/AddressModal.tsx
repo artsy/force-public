@@ -10,7 +10,10 @@ import {
   Spacer,
   Text,
 } from "@artsy/palette"
-import { SavedAddressType } from "../Utils/shippingAddressUtils"
+import {
+  SavedAddressType,
+  convertShippingAddressToMutationInput,
+} from "../Utils/shippingUtils"
 import { Formik, FormikHelpers, FormikProps } from "formik"
 import {
   removeEmptyKeys,
@@ -22,11 +25,17 @@ import { createUserAddress } from "v2/Apps/Order/Mutations/CreateUserAddress"
 import { SavedAddresses_me } from "v2/__generated__/SavedAddresses_me.graphql"
 import { AddressModalFields } from "v2/Components/Address/AddressModalFields"
 import { useSystemContext } from "v2/System/SystemContext"
+import { UpdateUserAddressMutationResponse } from "v2/__generated__/UpdateUserAddressMutation.graphql"
+import { CreateUserAddressMutationResponse } from "v2/__generated__/CreateUserAddressMutation.graphql"
+
 export interface Props {
   show: boolean
   closeModal: () => void
   address?: SavedAddressType
-  onSuccess: (address) => void
+  onSuccess: (
+    address: UpdateUserAddressMutationResponse &
+      CreateUserAddressMutationResponse
+  ) => void
   onDeleteAddress: (address) => void
   onError: (message: string) => void
   modalDetails?: {
@@ -121,8 +130,8 @@ export const AddressModal: React.FC<Props> = ({
               : updateUserAddress(
                   // @ts-expect-error STRICT_NULL_CHECK
                   relayEnvironment,
-                  address.internalID,
-                  values,
+                  address?.internalID,
+                  convertShippingAddressToMutationInput(values),
                   closeModal,
                   handleSuccess,
                   handleError
@@ -145,7 +154,9 @@ export const AddressModal: React.FC<Props> = ({
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 error={formik.touched.phoneNumber && formik.errors.phoneNumber}
-                value={formik.values?.phoneNumber}
+                value={
+                  formik.values?.phoneNumber ? formik.values?.phoneNumber : ""
+                }
               />
               {!createMutation && (
                 <Flex mt={2} flexDirection="column" alignItems="center">
@@ -183,7 +194,7 @@ export const AddressModal: React.FC<Props> = ({
           action: () => {
             setShowDialog(false)
             closeModal()
-            onDeleteAddress(address.internalID)
+            onDeleteAddress(address?.internalID)
           },
           text: "Delete",
         }}
